@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('wm_trucktype', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('warehouse_id')->constrained('wm_warehouse')->onDelete('cascade');
             $table->string('typecode',20);
             $table->string('description',50);
             $table->decimal('handlingweight',18, 8)->nullable();

@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('wm_uoms', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('warehouse_id')->constrained('wm_warehouse')->onDelete('cascade');
             $table->string('shortname',20)->nullable(false);
             $table->string('longname',50)->nullable(false);
             $table->string('uomtype',20)->nullable(false);

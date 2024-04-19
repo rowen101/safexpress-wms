@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('wm_suppliermaster', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('warehouse_id')->constrained('wm_warehouse')->onDelete('cascade');
             $table->string('supcode',20)->nullable(false);
             $table->string('supname',100)->nullable(false);
             $table->boolean('is_active')->default(true)->nullable(false);

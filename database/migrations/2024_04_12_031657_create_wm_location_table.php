@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('wm_location', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('warehouse_id')->constrained();
+            $table->foreignId('warehouse_id')->constrained('wm_warehouse')->onDelete('cascade');
             $table->string('loccode',20)->nullable(false);
             $table->string('locationgroup',20)->nullable(false);
             $table->string('locationtype',20)->nullable(false);

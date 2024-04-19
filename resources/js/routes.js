@@ -1,5 +1,5 @@
 import Dashboard from './components/Dashboard.vue';
-import ListAppointments from './pages/appointments/ListAppointments.vue';
+import Customer from './pages/warehouse/customer/index.vue';
 import AppointmentForm from './pages/appointments/AppointmentForm.vue';
 import UserList from './pages/users/UserList.vue';
 import UpdateSetting from './pages/settings/UpdateSetting.vue';
@@ -38,9 +38,9 @@ export default [
     },
 
     {
-        path: '/appointments',
-        name: 'Appointments',
-        component: ListAppointments,
+        path: '/warehouse/customer',
+        name: 'Customer',
+        component: Customer,
     },
 
     {

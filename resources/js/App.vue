@@ -28,6 +28,4 @@ const is404 = computed(() => {
 });
 </script>
 
-<style scoped>
-/* Add your styling for the main App.vue layout if needed */
-</style>
+

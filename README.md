@@ -45,6 +45,10 @@
 - ```npm run dev```
 - You can now log in with user "admin@admin.com", password "admin123"
 
+- Install Datatables
+- ```npm install --save jszip pdfmake datatables.net-bs4 datatables.net-buttons-bs4 datatables.net-responsive-bs4 datatables.net datatables.net-vue3```
+
+
 
 ## Authors
 

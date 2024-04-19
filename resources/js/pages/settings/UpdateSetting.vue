@@ -167,30 +167,18 @@ onMounted(() => {
             <div class="row">
                 <div class="col-md-6">
                     <div class="card">
-                        <ul class="nav nav-tabs" id="settingsTabs">
-                            <li class="nav-item">
-                                <a
-                                    class="nav-link active"
-                                    id="general-tab"
-                                    data-toggle="tab"
-                                    href="#general"
-                                    >General Settings</a
-                                >
-                            </li>
-                            <li class="nav-item">
-                                <a
-                                    class="nav-link"
-                                    id="site-tab"
-                                    data-toggle="tab"
-                                    href="#site"
-                                    >Site Settings</a
-                                >
-                            </li>
-                        </ul>
+                        <div class="card-header p-2">
+                            <ul class="nav nav-pills" style="font-size: 0.75rem;">
+                                <li class="nav-item"><a class="nav-link active" href="#setting" data-toggle="tab"><i
+                                            class="fas fa-cog mr-1"></i>Setting</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#site" data-toggle="tab"><i
+                                            class="fas fa-warehouse mr-1"></i> Warehouse</a></li>
+                            </ul>
+                        </div>
 
                         <div class="tab-content">
                             <!-- General Settings Tab -->
-                            <div class="tab-pane fade show active" id="general-tab">
+                            <div class="tab-pane fade show active" id="setting">
                                 <form @submit.prevent="updateSettings()">
                                     <div class="card-body">
                                         <div class="form-group">

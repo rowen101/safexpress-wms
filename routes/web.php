@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\AppointmentStatusController;
 use App\Http\Controllers\Admin\PalletController;
 use App\Http\Controllers\Admin\SliassetmonitoringController;
 use App\Http\Controllers\Admin\UserSiteController;
+use App\Http\Controllers\Wms\CustomerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -134,7 +135,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/web/bulkDeletePallet',[PalletController::class,'bulkDelete']);
 
 
-    Route::get('/web/filter-pallet',[PalletController::class,'filter']);
+    Route::resource('/web/customer', CustomerController::class);
 
 });
 

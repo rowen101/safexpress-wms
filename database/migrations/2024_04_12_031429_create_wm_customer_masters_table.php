@@ -14,6 +14,7 @@ return new class extends Migration
     {
         Schema::create('wm_customer', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('warehouse_id')->constrained('wm_warehouse')->onDelete('cascade');
             $table->string('cuscode',20)->nullable(false);
             $table->string('cusname',100)->nullable(false);
             $table->integer('leadtime')->nullable(false);
