@@ -29,3 +29,6 @@ const is404 = computed(() => {
 </script>
 
 
+<style>
+@import "datatables.net-bs4";
+</style>

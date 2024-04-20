@@ -3,27 +3,26 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Admin\MenuController;
-use App\Http\Controllers\Admin\SiteController;
 use App\Http\Controllers\Admin\TaskController;
 use App\Http\Controllers\Admin\TechController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\Admin\ClientController;
+use App\Http\Controllers\Admin\PalletController;
+use App\Http\Controllers\Wms\CustomerController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Wms\WarehouseController;
 use App\Http\Controllers\Admin\MenuListController;
 use App\Http\Controllers\Admin\UserMenuController;
-
 use App\Http\Controllers\Admin\VirtualASController;
 use App\Http\Controllers\Admin\AppointmentController;
 use App\Http\Controllers\Admin\MyClosePrioController;
+use App\Http\Controllers\Wms\WarehouseUserController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\DashboardStatController;
 use App\Http\Controllers\Admin\AppointmentStatusController;
-use App\Http\Controllers\Admin\PalletController;
 use App\Http\Controllers\Admin\SliassetmonitoringController;
-use App\Http\Controllers\Admin\UserSiteController;
-use App\Http\Controllers\Wms\CustomerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,22 +54,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/api/users/{user}', [UserController::class, 'destory']);
     Route::delete('/api/users', [UserController::class, 'bulkDelete']);
     Route::get('/api/users/userlist', [UserController::class, 'listuser']);
- Route::patch('/api/users/{user}/change-sitehead', [UserController::class, 'changesitehead']);
-    //client
-    Route::get('/api/view-clients', [ClientController::class,'viewclient']);
-    Route::get('/api/clients', [ClientController::class, 'index']);
-    Route::post('/api/clients', [ClientController::class, 'store']);
-    Route::put('/api/clients/{client}', [ClientController::class, 'update']);
-    Route::delete('/api/clients/{client}', [ClientController::class, 'destory']);
-    Route::delete('/api/clients', [ClientController::class, 'bulkDelete']);
+    Route::patch('/api/users/{user}/change-sitehead', [UserController::class, 'changesitehead']);
 
-    //appointments
-    Route::get('/api/appointment-status', [AppointmentStatusController::class, 'getStatusWithCount']);
-    Route::get('/api/appointments', [AppointmentController::class, 'index']);
-    Route::post('/api/appointments/create', [AppointmentController::class, 'store']);
-    Route::get('/api/appointments/{appointment}/edit', [AppointmentController::class, 'edit']);
-    Route::put('/api/appointments/{appointment}/edit', [AppointmentController::class, 'update']);
-    Route::delete('/api/appointments/{appointment}', [AppointmentController::class, 'destroy']);
     //setting
     Route::get('/api/settings', [SettingController::class, 'index']);
     Route::post('/api/settings', [SettingController::class, 'update']);
@@ -84,59 +69,42 @@ Route::middleware('auth')->group(function () {
     Route::delete('/api/tech-recommendations', [TechController::class, 'bulkDelete']);
     Route::post('/api/tech-getaction', [TechController::class, 'getAction']);
 
-    //tasks controller
-    Route::resource('/api/dailytask', TaskController::class);
-    Route::put('/api/dailytask/onhandler/{id}', [TaskController::class, 'onhandler']);
-    Route::post('/api/dailytask/addnewTask',[TaskController::class, 'addTask']);
-    Route::get('/api/dailytask/{id}/tasks',[TaskController::class, 'getTask']);
-    Route::put('/api/dailytask/drop/{id}',[TaskController::class, 'drop']);
-     Route::delete('/api/dailytask/deleteTask/{id}',[TaskController::class, 'deleteTask']);
-     Route::get('/api/dailytask/filter-taskdate',[TaskController::class,'FilterTaskdate']);
-     Route::get('/web/getsite',[TaskController::class,'getSite']);
-     //myvsc controller
-
-     Route::post('/api/changethemes',[VirtualASController::class, 'changethemes']);
-     Route::get('/api/filter-vsc',[VirtualASController::class,'vscfilter']);
-     Route::resource('/api/myvsc', VirtualASController::class);
-    //my close prio
-    Route::resource('/api/mycloseprio', MyClosePrioController::class);
-    Route::get('/api/filter-closeprio',[ MyClosePrioController::class,'FilterClosePrio']);
-
-    //site name
-    Route::resource('/api/site', SiteController::class);
 
     //menu controller
-    Route::resource('/api/menulist',MenuListController::class);
-    Route::get('/api/GetParentId',[MenuListController::class,'GetParentId']);
+    Route::resource('/api/menulist', MenuListController::class);
+    Route::get('/api/GetParentId', [MenuListController::class, 'GetParentId']);
 
     Route::resource('/api/menu', MenuController::class);
 
     //menu username
     Route::resource('/api/usermenu', UserMenuController::class);
 
-    Route::get('/api/showusermenu/{id}',[UserMenuController::class,'showusermenu']);
+    Route::get('/api/showusermenu/{id}', [UserMenuController::class, 'showusermenu']);
     Route::get('/api/usermenu/retrieve/{id}', [UserMenuController::class, 'retrieveUserMenu']);
 
 
-    Route::get('/api/chart',[DashboardStatController::class, 'getChartData']);
+    Route::get('/api/chart', [DashboardStatController::class, 'getChartData']);
 
     Route::resource('/api/notifications', NotificationController::class);
-    Route::put('/api/notifications/{id}/markAsRead',[NotificationController::class, 'markAsRead']);
+    Route::put('/api/notifications/{id}/markAsRead', [NotificationController::class, 'markAsRead']);
 
     Route::resource('/web/asset-monitoring', SliassetmonitoringController::class);
     Route::delete('/web/bulkDeleteAsset', [SliassetmonitoringController::class, 'bulkDelete']);
-    Route::get('/web/usersite/{id}',[UserSiteController::class,'index']);
+    Route::get('/web/warehouseuser/{id}', [WarehouseUserController::class, 'index']);
 
-    Route::get('/web/getsitewithoutuser',[UserSiteController::class,'getsitewthuserid']);
+    Route::get('/web/getsitewithoutuser', [WarehouseUserController::class, 'getsitewthuserid']);
 
-    Route::post('/web/onSaveupdate',[UserSiteController::class,'onSaveupdate']);
+    Route::post('/web/onSaveupdate', [WarehouseUserController::class, 'onSaveupdate']);
 
     Route::resource('/web/pallet', PalletController::class);
-    Route::delete('/web/bulkDeletePallet',[PalletController::class,'bulkDelete']);
+    Route::delete('/web/bulkDeletePallet', [PalletController::class, 'bulkDelete']);
 
+    //warehouse routes
+    Route::resource('/web/warehouse', WarehouseController::class);
 
+    //WMS Customer
     Route::resource('/web/customer', CustomerController::class);
-
 });
 
 Route::get('{view}', ApplicationController::class)->where('view', '(.*)')->middleware('auth');
+Route::get('/web/getwarehouseuser', [WarehouseController::class, 'getAuthWarehouse']);

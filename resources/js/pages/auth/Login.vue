@@ -13,8 +13,9 @@ const router = useRouter();
 const form = reactive({
     email: "",
     password: "",
+    options:"",
 });
-
+const warehousecode = ref("");
 const loading = ref(false);
 const pageTitle = `Login`;
 const errorMessage = ref("");
@@ -34,6 +35,15 @@ const handleSubmit = () => {
         .finally(() => {
             loading.value = false;
         });
+};
+
+const getWarehouse = async () => {
+    try {
+        const response = await axios.get("/web/getwarehouseuser");
+        option = response.data.data;
+    } catch (error) {
+        toastr.error(error.response.data.message);
+    }
 };
 
 // const handleKeyClick =() =>{
@@ -72,6 +82,7 @@ onMounted(() => {
                             placeholder="Email"
 
                         />
+                        <!-- @blur="getWarehouse" -->
                     </div>
                     <div class="input-group mb-3">
                         <div class="input-group-append">
@@ -84,20 +95,26 @@ onMounted(() => {
                             class="form-control"
                             placeholder="Password"
                             :type="showPassword ? 'text' : 'password'"
-                            @click="handleKeyClick"
+
                         />
+                        <!-- @click="handleKeyClick" -->
                     </div>
                     <label style="font-family: Tahoma, Geneva, sans-serif;font-size: 12px;">
                         <input type="checkbox" v-model="showPassword" />
                         Show Password
                     </label>
-                    <div class="input-group mb-3">
+                    <!-- <div class="input-group mb-3">
 
-                      <!-- <select  class="form-control" v-model="form.site">
-                        <option v-for="item in listuser" :key="item.id" :value="item.id"  :selected="(user.sitehead_user_id === item.id)">{{ item.first_name +' '+ item.last_name }}</option>
-                    </select> -->
+                        <select v-model="selectedWarehouse" class="form-control">
+                      <option
+                        v-for="option in options"
+                        :value="option.SiteCode"
+                        v-bind:selected="option == selectedWarehouse.serverwarehouseId"
+                        v-bind:key="option.SiteCode"
+                      >{{ option.SiteDescription }}</option>
+                    </select>
 
-                    </div>
+                    </div> -->
                     <div class="row">
                         <div class="col-12 mb-2">
                             <button
@@ -124,7 +141,7 @@ onMounted(() => {
                             href="https://ticket.appsafexpress.com/open.php"
                             target="_blank"
                         >
-                            <span><b>Request Account</b></span>
+                            <span>Request Account</span>
                         </a>
                     </div>
                 </div>

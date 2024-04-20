@@ -1,9 +1,10 @@
 <script setup>
+import { ref, onMounted, reactive, watch, computed } from "vue";
+import { useToastr } from "@/toastr";
+import ContentLoader from "../../components/ContentLoader.vue";
 import axios from "axios";
-import { ref, onMounted, reactive, watch } from "vue";
 import { Form, Field, useResetForm } from "vee-validate";
 import * as yup from "yup";
-import { useToastr } from "@/toastr";
 import DataTablesCore from "datatables.net";
 import DataTable from "datatables.net-vue3";
 import Buttons from "datatables.net-buttons-bs4";
@@ -11,36 +12,29 @@ import ButtonsHtml5 from "datatables.net-buttons/js/buttons.html5";
 import print from "datatables.net-buttons/js/buttons.print";
 import pdfmake from "pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
-import { useAuthUserStore } from "../../../stores/AuthUserStore";
+import { useAuthUserStore } from "../../stores/AuthUserStore";
 pdfmake.vfs = pdfFonts.pdfMake.vfs;
 import "datatables.net-responsive-bs4";
 import JsZip from "jszip";
 import FormCheckRadioGroup from '@/Components/FormCheckRadioGroup.vue'
-import { useRoute } from "vue-router";
+import moment from "moment";
 
 DataTable.use(pdfmake);
 DataTable.use(ButtonsHtml5);
 DataTable.use(DataTablesCore);
-
-const authUserStore = useAuthUserStore();
 const toastr = useToastr();
-const pageTitle = `${useRoute().name}`;
 
+const checked = ref(true);
+const isLoadingSite = ref(false);
 const listItem = ref([]);
 const columns = [
-    {
-        data: null,
-        render: function (data, type, row, meta) {
-            return `${meta.row + 1}`;
-        },
-    },
+
     { data: "id" },
-    { data: "cuscode" },
-    { data: "cusname" },
-    { data: "leadtime" },
-    { data: "stockfreshness" },
+    { data: "code" },
+    { data: "description" },
     { data: "is_active" },
-    { data: "created_by" },
+    { data: "created_by", sortable: false, },
+    { data: "created_at" },
     {
         data: "id",
         render: "#action",
@@ -50,53 +44,36 @@ const columns = [
 
 ];
 
-const botones = [
-    {
-        title: "CSV",
-        extend: "excelHtml5",
-        text: '<i class="fa-solid fa-file-excel"></i> Excel',
-        className: "btn btn-success",
-    },
-    {
-        title: "Print",
-        extend: "excelHtml5",
-        text: '<i class="fa-solid fa-file-excel"></i> Print',
-        className: "btn btn-success",
-    },
-];
-
-const isloading = ref(false);
 const editing = ref(false);
-const formValues = ref();
-const checked = ref(true);
 const form = reactive({
     id: "",
-    warehouse_id: "",
-    cuscode: "",
-    cusname: "",
-    leadtime: "",
-    stockfreshness: "",
+    code: "",
+    description:"",
     is_active: true,
-    created_by: "",
 });
 const createDataSchema = yup.object({
-    cuscode: yup.string().required(),
-    cusname: yup.string().required(),
-    leadtime: yup.string().required(),
-    stockfreshness: yup.string().required(),
-
+    code: yup.string().required(),
+    description: yup.string().required(),
 });
 
 const editDataSchema = yup.object({
-    cuscode: yup.string().required(),
-    cusname: yup.string().required(),
-    leadtime: yup.string().required(),
-    stockfreshness: yup.string().required(),
+    code: yup.string().required(),
+    description: yup.string().required(),
 });
-
-
+const getItems = () => {
+    isLoadingSite.value = true;
+    axios
+        .get(`/web/warehouse`)
+        .then((response) => {
+            isLoadingSite.value = false;
+            listItem.value = response.data;
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+};
 const getData = () => {
-    axios.get(`/web/customer`).then((response) => {
+    axios.get(`/web/warehouse`).then((response) => {
         listItem.value = response.data;
     });
 };
@@ -106,18 +83,17 @@ const addItem = () => {
 };
 const handleSubmit = (values, actions) => {
 
-    if (editing.value) {
-        updateRecord(values, actions);
-    } else {
-        createRecord(values, actions);
-    }
+if (editing.value) {
+    updateRecord(values, actions);
+} else {
+    createRecord(values, actions);
+}
 };
-
 const createRecord = (values, { resetForm, setErrors }) => {
     axios
-        .post("/web/customer", values)
+        .post("/web/warehouse", values)
         .then((response) => {
-            getData
+            getData();
             $("#FormModal").modal("hide");
             resetForm();
             toastr.success(response.data.message);
@@ -130,51 +106,84 @@ const createRecord = (values, { resetForm, setErrors }) => {
         });
 };
 
-
-const editItem = (id) => {
-    alert("Edit item with ID: " + id);
+const updateRecord = ( { setErrors }) => {
+    axios
+        .post("/web/warehouse", form)
+        .then((response) => {
+            getData();
+            $("#FormModal").modal("hide");
+            toastr.success(response.data.message);
+        })
+        .catch((error) => {
+            setErrors(error.response.data.errors);
+            console.log(error);
+        });
 };
+
+const editItem = (item) => {
+    editing.value = true;
+    form.id = item.id;
+    form.code = item.code;
+    form.description = item.description;
+
+    if (form.is_active === 1) {
+        checked.value = true;
+    } else {
+        checked.value = false;
+    }
+    form.is_active = item.is_active;
+    $("#FormModal").modal("show");
+
+};
+
 
 const deleteItem = (id) => {
-    console.log("Delete item with ID:", id);
+    isLoadingSite.value = true;
+    axios
+        .delete(`/web/warehouse/${id}`  )
+        .then((response) => {
+            isLoadingSite.value = false;
+           getData();
+        })
+        .catch((error) => {
+            console.log(error);
+        });
 };
-watch([checked], (val) => {
-     form.is_active = val ? 1 : 0;
-});
 onMounted(() => {
     getData();
-    document.title = pageTitle;
 });
 </script>
 <template>
-    <div class="content">
-        <div class="container-fluid">
-            <div class="d-flex justify-content-between">
-                <div class="d-flex">
-                    <button
-                        @click="addItem"
-                        type="button"
-                        class="mb-2 btn btn-primary"
-                    >
-                        <i class="fa fa-plus-circle mr-1"></i>
-                       {{ pageTitle }}
-                    </button>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-body">
-                    <div class="table-responsive">
+<div class="table-responsive">
                         <DataTable
                             class="mt-2 table table-sm table-hover table-striped display"
                             :columns="columns"
                             :data="listItem"
                             :options="{
-                                responsive: false,
+                                responsive: true,
                                 autoWidth: false,
                                 lengthMenu: [
                                     [10, 25, 50, -1],
                                     [10, 25, 50, 'All'],
                                 ],
+                                language: {
+                                    entries: {
+                                        _: 'warehouse',
+                                        1: 'warehouse'
+                                    }
+                                },
+                                // layout:{
+
+                                //     Start: {
+                                //     buttons: [
+                                //         {
+                                //             text: `Add <i class='fas fa-warehouse'></i>`,
+                                //             className: 'btn btn-sm btn-success',
+                                //             action: addItem
+                                //         }
+                                //     ]
+                                //         }
+                                // }
                             }"
 
                         >
@@ -182,7 +191,7 @@ onMounted(() => {
                                 <div>
                                     <Button
                                     class="btn btn-sm btn-primary"
-                                    @click="editItem(props.rowData.id)"
+                                    @click="editItem(props.rowData)"
                                     >Edit</Button
                                 >&nbsp;
                                 <Button
@@ -195,25 +204,22 @@ onMounted(() => {
                             </template>
                             <thead>
                                 <tr>
-                                    <th>#</th>
+
                                     <th>ID</th>
-                                    <th>Costomer Code</th>
-                                    <th>Costomer Name</th>
-                                    <th>Leadtime</th>
-                                    <th>Stockfreshness</th>
+                                    <th>Code</th>
+                                    <th>Description</th>
                                     <th>Active</th>
-                                    <th>Created by</th>
+                                    <th>Created By</th>
+                                    <th>Created At</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                         </DataTable>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <div
+
+
+                    <div
         class="modal fade"
         id="FormModal"
         data-backdrop="static"
@@ -226,8 +232,8 @@ onMounted(() => {
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="staticBackdropLabel">
-                        <span v-if="editing">Edit Customer</span>
-                        <span v-else>Add Customer</span>
+                        <span v-if="editing">Edit Warehouse</span>
+                        <span v-else>Add Warehouse</span>
                     </h5>
                     <button
                         type="button"
@@ -258,80 +264,47 @@ onMounted(() => {
 
 
                                     <div class="form-group">
-                                        <label for="cuscode"
-                                            >Customer Code</label
+                                        <label for="code"
+                                            >Warehouse Code</label
                                         >
                                         <Field
-                                            name="cuscode"
+                                            name="code"
                                             type="text"
                                             class="form-control"
                                             :class="{
-                                                'is-invalid': errors.cuscode,
+                                                'is-invalid': errors.code,
                                             }"
-                                            id="cuscode"
+                                            id="code"
                                             aria-describedby="nameHelp"
-                                            placeholder="Enter cuscode"
-                                            v-model="form.cuscode"
+                                            placeholder="Enter Warehouse Code"
+                                            v-model="form.code"
                                         />
                                         <span class="invalid-feedback">{{
-                                            errors.cuscode
+                                            errors.code
                                         }}</span>
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="cusname"
-                                            >Costomer Name</label
+                                        <label for="description"
+                                            >Description</label
                                         >
                                         <Field
-                                            name="cusname"
+                                            name="description"
                                             type="text"
                                             class="form-control"
                                             :class="{
-                                                'is-invalid': errors.cusname,
+                                                'is-invalid': errors.description,
                                             }"
-                                            id="cusname"
+                                            id="description"
                                             aria-describedby="nameHelp"
-                                            placeholder="Enter cusname"
-                                            v-model="form.cusname"
+                                            placeholder="Enter description"
+                                            v-model="form.description"
                                         />
                                         <span class="invalid-feedback">{{
-                                            errors.cusname
-                                        }}</span>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="leadtime">Lead Time</label>
-                                        <Field
-                                            name="leadtime"
-                                            type="text"
-                                            class="form-control"
-                                            :class="{
-                                                'is-invalid': errors.leadtime,
-                                            }"
-                                            id="leadtime"
-                                            aria-describedby="nameHelp"
-                                            placeholder="Enter leadtime"
-                                            v-model="form.leadtime"
-                                        />
-                                        <span class="invalid-feedback">{{
-                                            errors.leadtime
+                                            errors.description
                                         }}</span>
                                     </div>
 
-
-                                    <div class="form-group">
-                                        <label for="stockfreshness"
-                                            >Stock Freshness</label
-                                        >
-                                        <Field
-                                            name="stockfreshness"
-                                            type="text"
-                                            class="form-control"
-                                            id="stockfreshness"
-                                            aria-describedby="nameHelp"
-                                            placeholder="Enter stockfreshness"
-                                            v-model="form.stockfreshness"
-                                        />
-                                    </div>
                                     <div class="form-group">
                                         <FormCheckRadioGroup
                                         v-model="form.is_active"
@@ -361,6 +334,15 @@ onMounted(() => {
             </div>
         </div>
     </div>
+
+    <div class="fab-container">
+
+<div class="iconbutton">
+
+    <i class="fas fa-plus" @click="addItem()"></i>
+
+
+</div>
+
+</div>
 </template>
-
-

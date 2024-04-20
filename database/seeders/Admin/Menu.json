@@ -171,10 +171,10 @@
     },
     {
         "menu_id": 14,
-        "parent_id":1,
+        "parent_id":6,
         "menuTitle": "Warehouse users",
         "menuIcon": "fas fas fa-bars",
-        "menuRoute": "/warehouse/warehouseusers",
+        "menuRoute": "/maintenance/warehouseusers",
         "sortOrder": 200,
         "isActive": 1,
         "createdBy": 1,

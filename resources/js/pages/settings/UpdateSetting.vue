@@ -4,13 +4,13 @@ import { useToastr } from "@/toastr";
 import ContentLoader from "../../components/ContentLoader.vue";
 import { Form, Field, useResetForm } from "vee-validate";
 import { useRoute } from "vue-router";
-
+import WarehouseSetting from './WarehouseSetting.vue';
 const pageTitle = `${useRoute().name}`;
 const settings = ref([]);
 const toastr = useToastr();
 const showList = ref(true);
 const listItem = ref([]);
-const isLoadingSite = ref(false);
+
 const formValues = ref();
 //site
 const formSite = ref({
@@ -57,29 +57,7 @@ const deactivelist = computed(() => deActivatedTask.value.length);
 const toggleList = () => {
     showList.value = !showList.value;
 };
-const handleSubmit = () => {
-    // Assuming isLoadingSite and errors are defined in your setup
-    isLoadingSite.value = true;
-    axios
-        .post("/api/site", {
-            id: formSite.value?.id,
-            site_name: formSite.value?.site_name,
-            is_active: true,
-        })
-        .then((response) => {
-            // Assuming getItems is a function to fetch data
-            getItems();
-            // Reset the form after successful post
-            formSite.value = { id: null, site_name: "", is_active: true };
-            toastr.success(response.data.message);
-            isLoadingSite.value = false;
-        })
-        .catch((error) => {
-            if (error.response && error.response.status === 422) {
-                errors.value = error.response.data.errors;
-            }
-        });
-};
+
 
 // const createData = (values, { resetForm, setErrors }) => {
 //    axios
@@ -154,10 +132,8 @@ const updateSettings = () => {
 };
 
 onMounted(() => {
-    getItems();
     getSettings();
     document.title = pageTitle;
-
 });
 </script>
 
@@ -165,10 +141,10 @@ onMounted(() => {
     <div class="content">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <div class="card">
                         <div class="card-header p-2">
-                            <ul class="nav nav-pills" style="font-size: 0.75rem;">
+                            <ul class="nav nav-pills" >
                                 <li class="nav-item"><a class="nav-link active" href="#setting" data-toggle="tab"><i
                                             class="fas fa-cog mr-1"></i>Setting</a></li>
                                 <li class="nav-item"><a class="nav-link" href="#site" data-toggle="tab"><i
@@ -271,190 +247,9 @@ onMounted(() => {
                             </div>
 
                             <!-- Site Settings Tab -->
-                            <div class="tab-pane fade" id="site">
-                                <div
-                                    class="mt-2"
-                                    v-if="listItem.length > 0"
-                                    style="max-height: 300px; overflow-y: auto"
-                                >
-                                    <!-- Separate List for incomplete tasks -->
-                                    <ContentLoader v-if="isLoadingSite"/>
+                            <div class="tab-pane fade p-2" id="site">
 
-                                    <ul
-                                        class="list-group"
-                                        v-for="item in listItem"
-                                        :key="item.id"
-                                    >
-                                        <li
-                                            v-if="item.is_active === 1"
-                                            class="list-group-item mt-2"
-                                        >
-                                            <div
-                                                class="d-flex justify-content-between"
-                                            >
-                                                <div class="d-flex">
-                                                    <i
-                                                        @click="
-                                                            handleIsActiveSite(
-                                                                item
-                                                            )
-                                                        "
-                                                        :class="{
-                                                            'cursor-pointer mr-2': true,
-                                                            'fa fa-check-circle text-primary':
-                                                                item.is_active ===
-                                                                1,
-                                                            'fa fa-circle text-primary':
-                                                                item.is_active ===
-                                                                0,
-                                                        }"
-                                                        style="font-size: 15px"
-                                                    ></i>
-
-                                                    <span
-                                                        :class="{
-                                                            'font-italic text-red':
-                                                                item.is_active ===
-                                                                0,
-                                                            '':
-                                                                item.is_active ===
-                                                                1,
-                                                        }"
-                                                    >
-                                                        {{ item.site_name }}
-
-                                                    </span>
-                                                </div>
-                                                <div class="d-flex">
-                                                    <i
-                                                        class="fa fa-pen text-success"
-                                                        @click="editData(item)"
-                                                    ></i>
-
-
-                                                </div>
-                                            </div>
-                                        </li>
-                                    </ul>
-
-                                    <!-- List for completed tasks -->
-                                    <li class="m-2 list-unstyled">
-                                        <button
-                                            class="btn btn-sm bg-danger"
-                                            @click="toggleList"
-                                            v-if="deactivelist > 0"
-                                        >
-                                            <i
-                                                :class="[
-                                                    'fa',
-                                                    showList
-                                                        ? 'fa-arrow-down'
-                                                        : 'fa-arrow-right',
-                                                ]"
-                                            ></i>
-                                            &nbsp;Deactive List
-                                            {{ deactivelist }}
-                                        </button>
-                                    </li>
-                                    <div v-if="showList">
-                                        <ul
-                                            class="list-group"
-                                            v-for="item in listItem"
-                                            :key="item.id"
-                                        >
-                                            <li
-                                                v-if="item.is_active === 0"
-                                                class="list-group-item mt-2"
-                                            >
-                                                <div
-                                                    class="d-flex justify-content-between"
-                                                >
-                                                    <div class="d-flex">
-                                                        <i
-                                                            @click="
-                                                                handleIsActiveSite(
-                                                                    item
-                                                                )
-                                                            "
-                                                            :class="{
-                                                                'cursor-pointer mr-2': true,
-                                                                'fa fa-check-circle text-primary':
-                                                                    item.is_active ===
-                                                                    1,
-                                                                'fa fa-circle text-primary':
-                                                                    item.is_active ===
-                                                                    0,
-                                                            }"
-                                                            style="
-                                                                font-size: 15px;
-                                                            "
-                                                        ></i>
-
-                                                        <span
-                                                            :class="{
-                                                                'font-italic text-red':
-                                                                    item.is_active ===
-                                                                    0,
-                                                                '':
-                                                                    item.is_active ===
-                                                                    1,
-                                                            }"
-                                                        >
-                                                            <del>{{
-                                                                item.site_name
-                                                            }}</del>
-                                                        </span>
-                                                    </div>
-                                                    <!-- <div class="d-flex">
-                                                        <i
-                                                            v-if="
-                                                                item.is_active ===
-                                                                1
-                                                            "
-                                                            class="fa fa-pen text-success mr-2"
-                                                            @click="editData(item)"
-                                                        ></i>
-                                                    </div> -->
-
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="mt-2 text-center" v-else>
-                                    <span>No Site</span>
-                                </div>
-                                <Form
-                                    ref="form"
-                                    @submit="handleSubmit"
-                                    :initial-values="formValues"
-                                >
-                                    <Field
-                                        name="id"
-                                        v-model="formSite.id"
-                                        type="text"
-                                        hidden
-                                    />
-                                    <div class="input-group">
-                                        <Field
-                                            name="site_name"
-                                            type="text"
-                                            class="form-control"
-                                            id="site_name"
-                                            v-model="formSite.site_name"
-                                            aria-describedby="nameHelp"
-                                            placeholder="Enter Site Name"
-                                        />
-                                        <div class="input-group-append">
-                                            <button
-                                                type="submit"
-                                                class="btn btn-primary btn-sm"
-                                            >
-                                                <i class="fas fa-warehouse"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </Form>
+                                <WarehouseSetting/>
                             </div>
                         </div>
                     </div>

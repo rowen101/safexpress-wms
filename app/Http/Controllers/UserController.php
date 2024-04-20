@@ -48,4 +48,6 @@ class UserController extends Controller
         ];
         return response($res, 201);
     }
+
+    
 }

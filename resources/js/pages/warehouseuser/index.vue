@@ -34,17 +34,15 @@ const getUser = () => {
 };
 
 const getSite = (userId) => {
-    // Renamed parameter for clarity
-
     if (userId !== null) {
         axios
-            .get(`/web/usersite/${userId}`) // Updated endpoint with userId as a route parameter
+            .get(`/web/warehouseuser/${userId}`)
             .then((response) => {
                 listsite.value = response.data;
             })
             .catch((error) => {
                 console.error("Error fetching site data for user:", error);
-                // Handle error gracefully, e.g., show a message to the user
+
             });
     } else {
         axios
@@ -72,7 +70,7 @@ const handleSubmit = () => {
     axios
         .post("/web/onSaveupdate", postData)
         .then((response) => {
-            toastr.success("User Site Save successfully!");
+            toastr.success(response.data.message);
         })
         .catch((error) => {
             setErrors(error.response.data.errors);
@@ -96,6 +94,7 @@ onMounted(() => {
                 <div class="col-md-6">
                     <div class="card">
                         <div class="card-title">
+
                             <div class="form-group m-3">
                                 <Field
                                     as="select"
@@ -141,7 +140,7 @@ onMounted(() => {
                                             :for="'site_id_' + site.id"
                                             class="custom-control-label"
                                         >
-                                            {{ site.site_name }}
+                                            {{ site.description }}
                                         </label>
                                     </div>
                                 </li>

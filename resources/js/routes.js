@@ -18,8 +18,13 @@ import TechRecomApprove from "./pages/techrecomm/TechRecommApprove.vue";
 import Notifications from './pages/notification/index.vue';
 import AssetMonitoring from './pages/assetmonitoring/AssetmList.vue';
 import PalletMonitoring from './pages/palletmonitoring/PalletList.vue';
-import UserSite from './pages/usersite/UserSite.vue';
-
+import WarehouseUser from './pages/warehouseuser/index.vue';
+import Supplier from './pages/warehouse/suppliar/index.vue';
+import Trucker from './pages/warehouse/trucker/index.vue';
+import LocationGroup from './pages/warehouse/locationgroup/index.vue';
+import StorageLocation from './pages/warehouse/storagelocation/index.vue';
+import Trucktype from './pages/warehouse/Trucktype/index.vue';
+import ItemMaster from './pages/warehouse/ItemMaster/index.vue';
 export default [
     {
         path: '/login',
@@ -32,7 +37,7 @@ export default [
     //     component: Register,
     // },
     {
-        path: '/dashboard',
+        path: '/',
         name: 'Dashboard',
         component: Dashboard,
     },
@@ -136,9 +141,35 @@ export default [
         name: 'Pallet Monitoring',
         component: PalletMonitoring, // Replace with your actual 404 component
     },
+    //warehouse
   {
-        path: '/usersite',
-        name: 'User Site',
-        component: UserSite, // Replace with your actual 404 component
+        path: '/warehouse/supplier',
+        name: 'Supplier',
+        component: Supplier,
+    },
+    {
+        path: '/warehouse/trucker',
+        name: 'Trucker',
+        component: Trucker,
+    },
+    {
+        path: '/warehouse/location-groups',
+        name: 'Location Group',
+        component: LocationGroup,
+    },
+    {
+        path: '/warehouse/storage-location',
+        name: 'Storage Location',
+        component: StorageLocation,
+    },
+    {
+        path: '/warehouse/trucktype',
+        name: 'Truck type',
+        component: Trucktype,
+    },
+    {
+        path: '/warehouse/item-master',
+        name: 'Item Master',
+        component: ItemMaster,
     },
 ]
