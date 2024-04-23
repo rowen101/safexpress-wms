@@ -23,8 +23,8 @@ import Supplier from './pages/warehouse/suppliar/index.vue';
 import Trucker from './pages/warehouse/trucker/index.vue';
 import LocationGroup from './pages/warehouse/locationgroup/index.vue';
 import StorageLocation from './pages/warehouse/storagelocation/index.vue';
-import Trucktype from './pages/warehouse/Trucktype/index.vue';
-import ItemMaster from './pages/warehouse/ItemMaster/index.vue';
+import Trucktype from './pages/warehouse/trucktype/index.vue';
+import ItemMaster from './pages/warehouse/itemmaster/index.vue';
 export default [
     {
         path: '/login',

@@ -3,7 +3,6 @@
 <template>
     <div>
         <MainLayout v-if="!is404 && !isTechRecomApprovePage" />
-        <TechRecomApprove v-else-if="isTechRecomApprovePage" />
         <ErrorLayout v-else />
     </div>
 </template>
@@ -26,7 +25,33 @@ const isTechRecomApprovePage = computed(() => {
 const is404 = computed(() => {
     return route.name === "404 Error Page";
 });
+
+const deleteItem = async (id) => {
+    const result = await swal({
+        title: "Are you sure?",
+        text: "You wanna Delete this Record?",
+        icon: "warning",
+        showCancelButton: true,
+    });
+
+    // Check if the user confirmed
+    if (result.isConfirmed) {
+        isloading.value = true;
+        axios
+            .delete(`/web/warehouse/${id}`)
+            .then((response) => {
+                isLoadingSite.value = false;
+                toastr.success("Record Delete successfully!");
+                getData();
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
+};
 </script>
+
+
 
 
 <style>

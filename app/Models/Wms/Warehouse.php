@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Wms;
 
-use App\Models\WarehouseUser;
+use App\Models\Wms\WarehouseUser;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 

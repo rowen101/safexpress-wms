@@ -3,12 +3,11 @@
 namespace App\Http\Controllers\Wms;
 
 use App\Http\Controllers\Controller;
-use App\Models\Wms\Customer;
+use App\Models\Wms\Supplier;
 use Illuminate\Http\Request;
 
-class CustomerController extends Controller
+class SupplierController extends Controller
 {
-
     public function __construct()
     {
         $this->middleware('auth');
@@ -20,15 +19,14 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        $data = Customer::query()
+        $data = Supplier::query()
         ->orderBy('id', 'desc')
         ->get()
         ->map(fn ($item) => [
             'id' => $item->id,
-            'cuscode' => $item->cuscode,
-            'cusname' => $item->cusname,
-            'leadtime' => $item->leadtime,
-            'stockfreshness' => $item->stockfreshness,
+            'warehouse_id' => $item->warehouse_id,
+            'supcode' => $item->supcode,
+            'supname' => $item->supname,
             'is_active' => $item->is_active,
             'created_by' => $item->created_by,
             'created_at' => $item->created_at->format('m-d-Y'),
@@ -58,9 +56,9 @@ class CustomerController extends Controller
     public function store(Request $request)
     {
         $username = auth()->user()->name;
-        $existingRecord = Customer::where([
-            'cuscode' => $request->cuscode,
-            'cusname' => $request->cusname,
+        $existingRecord = Supplier::where([
+            'supcode' => $request->supcode,
+            'supname' => $request->supname,
 
         ])->first();
 
@@ -68,26 +66,23 @@ class CustomerController extends Controller
             return response()->json(['message' => 'This data already exists in the database.'], 422);
         }
 
-        $customer = Customer::updateOrCreate(
+        $data = Supplier::updateOrCreate(
             ['id' => $request->id],
             [
                 'warehouse_id' => 1,
-                'cuscode' => $request->cuscode,
-                'cusname' => $request->cusname,
-                'leadtime' => $request->leadtime,
-                'stockfreshness' => $request->stockfreshness,
+                'supcode' => $request->supcode,
+                'supname' => $request->supname,
                 'is_active' => $request->is_active,
                 'created_by' => $username
             ]
         );
 
-        if ($customer->wasRecentlyCreated) {
+        if ($data->wasRecentlyCreated) {
             return response()->json(['message' => 'saved successfully.']);
         } else {
             return response()->json(['message' => 'updated successfully.']);
         }
     }
-
 
     /**
      * Display the specified resource.
@@ -131,7 +126,7 @@ class CustomerController extends Controller
      */
     public function destroy($id)
     {
-        $data = Customer::find($id);
+        $data = Supplier::find($id);
         $data->delete();
         return response()->json(['message' => 'successfull Deleted']);
     }

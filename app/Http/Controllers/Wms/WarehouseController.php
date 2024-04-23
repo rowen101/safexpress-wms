@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Wms;
 
 use App\Models\User;
-use App\Models\Warehouse;
+use App\Models\Wms\Warehouse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 

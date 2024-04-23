@@ -23,6 +23,12 @@ use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\DashboardStatController;
 use App\Http\Controllers\Admin\AppointmentStatusController;
 use App\Http\Controllers\Admin\SliassetmonitoringController;
+use App\Http\Controllers\Wms\ItemMasterController;
+use App\Http\Controllers\Wms\LocationGroupController;
+use App\Http\Controllers\Wms\SupplierController;
+use App\Http\Controllers\Wms\TruckerController;
+use App\Http\Controllers\Wms\TruckertypeController;
+use App\Models\Wms\Locationgroup;
 
 /*
 |--------------------------------------------------------------------------
@@ -104,6 +110,21 @@ Route::middleware('auth')->group(function () {
 
     //WMS Customer
     Route::resource('/web/customer', CustomerController::class);
+
+    //WMS supplier
+      Route::resource('/web/supplier', SupplierController::class);
+
+    //WMS trucker
+    Route::resource('/web/trucker', TruckerController::class);
+
+    //WMS Location Group
+    Route::resource('/web/locationgroup', LocationGroupController::class);
+
+    //WMS Trucktype
+    Route::resource('/web/trucktype', TruckertypeController::class);
+
+     //WMS Item Master
+     Route::resource('/web/item-master', ItemMasterController::class);
 });
 
 Route::get('{view}', ApplicationController::class)->where('view', '(.*)')->middleware('auth');

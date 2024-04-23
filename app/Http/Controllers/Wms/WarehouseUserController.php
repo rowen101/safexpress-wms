@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Wms;
 
-use App\Models\Warehouse;
+use App\Models\Wms\Warehouse;
 use Illuminate\Http\Request;
-use App\Models\WarehouseUser;
+use App\Models\Wms\WarehouseUser;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 

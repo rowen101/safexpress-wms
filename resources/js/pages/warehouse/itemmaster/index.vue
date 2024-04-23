@@ -18,12 +18,14 @@ import "datatables.net-responsive-bs4";
 import JsZip from "jszip";
 import FormCheckRadioGroup from "@/Components/FormCheckRadioGroup.vue";
 import moment from "moment";
+import { useRoute } from "vue-router";
 
 DataTable.use(pdfmake);
 DataTable.use(ButtonsHtml5);
 DataTable.use(DataTablesCore);
-const toastr = useToastr();
 
+const toastr = useToastr();
+const pageTitle = `${useRoute().name}`;
 const checked = ref(true);
 const isLoadingSite = ref(false);
 const listItem = ref([]);
@@ -146,6 +148,7 @@ const deleteItem = (id) => {
 };
 onMounted(() => {
     getData();
+    document.title = pageTitle;
 });
 </script>
 <template>
@@ -167,22 +170,10 @@ onMounted(() => {
                                 ],
                                 language: {
                                     entries: {
-                                        _: 'warehouse',
-                                        1: 'warehouse',
+                                        _: `${pageTitle}`,
+                                        1: `${pageTitle}`,
                                     },
                                 },
-                                // layout:{
-
-                                //     Start: {
-                                //     buttons: [
-                                //         {
-                                //             text: `Add <i class='fas fa-warehouse'></i>`,
-                                //             className: 'btn btn-sm btn-success',
-                                //             action: addItem
-                                //         }
-                                //     ]
-                                //         }
-                                // }
                             }"
                         >
                             <template #action="props">

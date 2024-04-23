@@ -16,24 +16,25 @@ import { useAuthUserStore } from "../../../stores/AuthUserStore";
 pdfmake.vfs = pdfFonts.pdfMake.vfs;
 import "datatables.net-responsive-bs4";
 import JsZip from "jszip";
-import FormCheckRadioGroup from '@/Components/FormCheckRadioGroup.vue'
+import FormCheckRadioGroup from "@/Components/FormCheckRadioGroup.vue";
 import moment from "moment";
+import { useRoute } from "vue-router";
 
 DataTable.use(pdfmake);
 DataTable.use(ButtonsHtml5);
 DataTable.use(DataTablesCore);
-const toastr = useToastr();
 
+const toastr = useToastr();
+const pageTitle = `${useRoute().name}`;
 const checked = ref(true);
 const isLoadingSite = ref(false);
 const listItem = ref([]);
 const columns = [
-
     { data: "id" },
-    { data: "code" },
-    { data: "description" },
+    { data: "truckercode" },
+    { data: "truckername" },
     { data: "is_active" },
-    { data: "created_by", sortable: false, },
+    { data: "created_by", sortable: false },
     { data: "created_at" },
     {
         data: "id",
@@ -41,29 +42,28 @@ const columns = [
         title: "Action",
         sortable: false,
     },
-
 ];
 
 const editing = ref(false);
 const form = reactive({
     id: "",
-    code: "",
-    description:"",
+    truckercode: "",
+    truckername: "",
     is_active: true,
 });
 const createDataSchema = yup.object({
-    code: yup.string().required(),
-    description: yup.string().required(),
+    truckercode: yup.string().required(),
+    truckername: yup.string().required(),
 });
 
 const editDataSchema = yup.object({
-    code: yup.string().required(),
-    description: yup.string().required(),
+    truckercode: yup.string().required(),
+    truckername: yup.string().required(),
 });
 const getItems = () => {
     isLoadingSite.value = true;
     axios
-        .get(`/web/warehouse`)
+        .get(`/web/trucker`)
         .then((response) => {
             isLoadingSite.value = false;
             listItem.value = response.data;
@@ -73,7 +73,7 @@ const getItems = () => {
         });
 };
 const getData = () => {
-    axios.get(`/web/warehouse`).then((response) => {
+    axios.get(`/web/trucker`).then((response) => {
         listItem.value = response.data;
     });
 };
@@ -82,16 +82,15 @@ const addItem = () => {
     $("#FormModal").modal("show");
 };
 const handleSubmit = (values, actions) => {
-
-if (editing.value) {
-    updateRecord(values, actions);
-} else {
-    createRecord(values, actions);
-}
+    if (editing.value) {
+        updateRecord(values, actions);
+    } else {
+        createRecord(values, actions);
+    }
 };
 const createRecord = (values, { resetForm, setErrors }) => {
     axios
-        .post("/web/warehouse", values)
+        .post("/web/trucker", values)
         .then((response) => {
             getData();
             $("#FormModal").modal("hide");
@@ -106,9 +105,9 @@ const createRecord = (values, { resetForm, setErrors }) => {
         });
 };
 
-const updateRecord = ( { setErrors }) => {
+const updateRecord = ({ setErrors }) => {
     axios
-        .post("/web/warehouse", form)
+        .post("/web/trucker", form)
         .then((response) => {
             getData();
             $("#FormModal").modal("hide");
@@ -123,27 +122,19 @@ const updateRecord = ( { setErrors }) => {
 const editItem = (item) => {
     editing.value = true;
     form.id = item.id;
-    form.code = item.code;
-    form.description = item.description;
-
-    if (form.is_active === 1) {
-        checked.value = true;
-    } else {
-        checked.value = false;
-    }
+    form.truckercode = item.truckercode;
+    form.truckername = item.truckername;
     form.is_active = item.is_active;
     $("#FormModal").modal("show");
-
 };
-
 
 const deleteItem = (id) => {
     isLoadingSite.value = true;
     axios
-        .delete(`/web/warehouse/${id}`  )
+        .delete(`/web/trucker/${id}`)
         .then((response) => {
             isLoadingSite.value = false;
-           getData();
+            getData();
         })
         .catch((error) => {
             console.log(error);
@@ -151,10 +142,15 @@ const deleteItem = (id) => {
 };
 onMounted(() => {
     getData();
+    document.title = pageTitle;
 });
 </script>
 <template>
-<div class="table-responsive">
+    <div class="content">
+        <div class="container-fluid">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
                         <DataTable
                             class="mt-2 table table-sm table-hover table-striped display"
                             :columns="columns"
@@ -168,46 +164,31 @@ onMounted(() => {
                                 ],
                                 language: {
                                     entries: {
-                                        _: 'warehouse',
-                                        1: 'warehouse'
-                                    }
+                                        _: `${pageTitle}`,
+                                        1: `${pageTitle}`,
+                                    },
                                 },
-                                // layout:{
-
-                                //     Start: {
-                                //     buttons: [
-                                //         {
-                                //             text: `Add <i class='fas fa-warehouse'></i>`,
-                                //             className: 'btn btn-sm btn-success',
-                                //             action: addItem
-                                //         }
-                                //     ]
-                                //         }
-                                // }
                             }"
-
                         >
                             <template #action="props">
                                 <div>
                                     <Button
-                                    class="btn btn-sm btn-primary"
-                                    @click="editItem(props.rowData)"
-                                    >Edit</Button
-                                >&nbsp;
-                                <Button
-                                    class="btn btn-sm btn-danger"
-                                    @click="deleteItem(props.rowData.id)"
-                                    >Delete</Button
-                                >
+                                        class="btn btn-sm btn-primary"
+                                        @click="editItem(props.rowData)"
+                                        >Edit</Button
+                                    >&nbsp;
+                                    <Button
+                                        class="btn btn-sm btn-danger"
+                                        @click="deleteItem(props.rowData.id)"
+                                        >Delete</Button
+                                    >
                                 </div>
-
                             </template>
                             <thead>
                                 <tr>
-
                                     <th>ID</th>
-                                    <th>Code</th>
-                                    <th>Description</th>
+                                    <th>Trucker Code</th>
+                                    <th>Trucker Name</th>
                                     <th>Active</th>
                                     <th>Created By</th>
                                     <th>Created At</th>
@@ -216,10 +197,12 @@ onMounted(() => {
                             </thead>
                         </DataTable>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-
-
-                    <div
+    <div
         class="modal fade"
         id="FormModal"
         data-backdrop="static"
@@ -228,12 +211,12 @@ onMounted(() => {
         aria-labelledby="staticBackdropLabel"
         aria-hidden="true"
     >
-        <div class="modal-dialog modal-sm " role="document">
+        <div class="modal-dialog modal-sm" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="staticBackdropLabel">
-                        <span v-if="editing">Edit Warehouse</span>
-                        <span v-else>Add Warehouse</span>
+                        <span v-if="editing">Edit {{ pageTitle }}</span>
+                        <span v-else>Add {{ pageTitle }}</span>
                     </h5>
                     <button
                         type="button"
@@ -254,71 +237,62 @@ onMounted(() => {
                 >
                     <div class="modal-body">
                         <div class="col-md-12">
-                                    <Field
-                                        type="hidden"
-                                        name="created_by"
-                                        id="created_by"
-                                        v-model="form.created_by"
-                                    />
+                            <Field
+                                type="hidden"
+                                name="created_by"
+                                id="created_by"
+                                v-model="form.created_by"
+                            />
 
+                            <div class="form-group">
+                                <label for="truckercode">Trucker Code</label>
+                                <Field
+                                    name="truckercode"
+                                    type="text"
+                                    class="form-control"
+                                    :class="{
+                                        'is-invalid': errors.truckercode,
+                                    }"
+                                    id="truckercode"
+                                    aria-describedby="nameHelp"
+                                    placeholder="Enter Trucker Code"
+                                    v-model="form.truckercode"
+                                />
+                                <span class="invalid-feedback">{{
+                                    errors.truckercode
+                                }}</span>
+                            </div>
 
+                            <div class="form-group">
+                                <label for="truckername">Trucker Name</label>
+                                <Field
+                                    name="truckername"
+                                    type="text"
+                                    class="form-control"
+                                    :class="{
+                                        'is-invalid': errors.truckername,
+                                    }"
+                                    id="truckername"
+                                    aria-describedby="nameHelp"
+                                    placeholder="Enter Trucker Name"
+                                    v-model="form.truckername"
+                                />
+                                <span class="invalid-feedback">{{
+                                    errors.truckname
+                                }}</span>
+                            </div>
 
-                                    <div class="form-group">
-                                        <label for="code"
-                                            >Warehouse Code</label
-                                        >
-                                        <Field
-                                            name="code"
-                                            type="text"
-                                            class="form-control"
-                                            :class="{
-                                                'is-invalid': errors.code,
-                                            }"
-                                            id="code"
-                                            aria-describedby="nameHelp"
-                                            placeholder="Enter Warehouse Code"
-                                            v-model="form.code"
-                                        />
-                                        <span class="invalid-feedback">{{
-                                            errors.code
-                                        }}</span>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="description"
-                                            >Description</label
-                                        >
-                                        <Field
-                                            name="description"
-                                            type="text"
-                                            class="form-control"
-                                            :class="{
-                                                'is-invalid': errors.description,
-                                            }"
-                                            id="description"
-                                            aria-describedby="nameHelp"
-                                            placeholder="Enter description"
-                                            v-model="form.description"
-                                        />
-                                        <span class="invalid-feedback">{{
-                                            errors.description
-                                        }}</span>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <FormCheckRadioGroup
-                                        v-model="form.is_active"
-                                        name="is_active"
-                                        :options="{ is_active: 'Active' }"
-                                        />
-                                    </div>
-
-
+                            <div class="form-group">
+                                <FormCheckRadioGroup
+                                    v-model="form.is_active"
+                                    name="is_active"
+                                    :options="{ is_active: 'Active' }"
+                                />
+                            </div>
                         </div>
                     </div>
 
                     <div class="modal-footer">
-
                         <button
                             type="button"
                             class="btn btn-secondary"
@@ -336,13 +310,8 @@ onMounted(() => {
     </div>
 
     <div class="fab-container">
-
-<div class="iconbutton">
-
-    <i class="fas fa-plus" @click="addItem()"></i>
-
-
-</div>
-
-</div>
+        <div class="iconbutton">
+            <i class="fas fa-plus" @click="addItem()"></i>
+        </div>
+    </div>
 </template>
