@@ -1,34 +1,37 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Models\Wms\Locationgroup;
 
+use App\Models\Wms\StorageLocation;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\MenuController;
 use App\Http\Controllers\Admin\TaskController;
 use App\Http\Controllers\Admin\TechController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ApplicationController;
+use App\Http\Controllers\Wms\TruckerController;
 use App\Http\Controllers\Admin\ClientController;
 use App\Http\Controllers\Admin\PalletController;
 use App\Http\Controllers\Wms\CustomerController;
+use App\Http\Controllers\Wms\SupplierController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Wms\ListtableController;
 use App\Http\Controllers\Wms\WarehouseController;
 use App\Http\Controllers\Admin\MenuListController;
 use App\Http\Controllers\Admin\UserMenuController;
+use App\Http\Controllers\Wms\ItemMasterController;
 use App\Http\Controllers\Admin\VirtualASController;
+use App\Http\Controllers\Wms\TruckertypeController;
 use App\Http\Controllers\Admin\AppointmentController;
 use App\Http\Controllers\Admin\MyClosePrioController;
+use App\Http\Controllers\Wms\LocationGroupController;
 use App\Http\Controllers\Wms\WarehouseUserController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\DashboardStatController;
+use App\Http\Controllers\Wms\StorageLocationController;
 use App\Http\Controllers\Admin\AppointmentStatusController;
 use App\Http\Controllers\Admin\SliassetmonitoringController;
-use App\Http\Controllers\Wms\ItemMasterController;
-use App\Http\Controllers\Wms\LocationGroupController;
-use App\Http\Controllers\Wms\SupplierController;
-use App\Http\Controllers\Wms\TruckerController;
-use App\Http\Controllers\Wms\TruckertypeController;
-use App\Models\Wms\Locationgroup;
 
 /*
 |--------------------------------------------------------------------------
@@ -120,11 +123,17 @@ Route::middleware('auth')->group(function () {
     //WMS Location Group
     Route::resource('/web/locationgroup', LocationGroupController::class);
 
+    //WMS Location
+    Route::resource('/web/storage-location', StorageLocationController::class);
+
     //WMS Trucktype
     Route::resource('/web/trucktype', TruckertypeController::class);
 
      //WMS Item Master
      Route::resource('/web/item-master', ItemMasterController::class);
+
+     //listtable
+     Route::get('/web/getkey/{key}', [ListtableController::class, 'getkey']);
 });
 
 Route::get('{view}', ApplicationController::class)->where('view', '(.*)')->middleware('auth');

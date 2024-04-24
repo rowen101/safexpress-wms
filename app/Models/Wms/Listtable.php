@@ -5,16 +5,19 @@ namespace App\Models\Wms;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Locationgroup extends Model
+class Listtable extends Model
 {
     use HasFactory;
-    protected $table = 'wm_locationgroup';
+
+    protected $table = 'wm_listtable';
     protected $fillable = [
         'id',
-        'warehouse_id',
-        'code',
+        'tablekey',
+        'columnkey',
+        'identitycode',
         'description',
         'sortorder',
+        'tracecode',
         'is_active',
         'created_by',
         'updated_by'

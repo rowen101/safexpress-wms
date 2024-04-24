@@ -33,9 +33,10 @@ const columns = [
     { data: "id" },
     { data: "code" },
     { data: "description" },
-    { data: "is_active" },
-    { data: "created_by", sortable: false },
+    { data: "sortorder"},
+    { data: "created_by"},
     { data: "created_at" },
+    { data: "is_active" },
     {
         data: "id",
         render: "#action",
@@ -49,6 +50,7 @@ const form = reactive({
     id: "",
     code: "",
     description: "",
+    sortorder:"",
     is_active: true,
 });
 const createDataSchema = yup.object({
@@ -60,20 +62,9 @@ const editDataSchema = yup.object({
     code: yup.string().required(),
     description: yup.string().required(),
 });
-const getItems = () => {
-    isLoadingSite.value = true;
-    axios
-        .get(`/web/warehouse`)
-        .then((response) => {
-            isLoadingSite.value = false;
-            listItem.value = response.data;
-        })
-        .catch((error) => {
-            console.log(error);
-        });
-};
+
 const getData = () => {
-    axios.get(`/web/warehouse`).then((response) => {
+    axios.get(`/web/locationgroup`).then((response) => {
         listItem.value = response.data;
     });
 };
@@ -90,7 +81,7 @@ const handleSubmit = (values, actions) => {
 };
 const createRecord = (values, { resetForm, setErrors }) => {
     axios
-        .post("/web/warehouse", values)
+        .post("/web/locationgroup", values)
         .then((response) => {
             getData();
             $("#FormModal").modal("hide");
@@ -107,7 +98,7 @@ const createRecord = (values, { resetForm, setErrors }) => {
 
 const updateRecord = ({ setErrors }) => {
     axios
-        .post("/web/warehouse", form)
+        .post("/web/locationgroup", form)
         .then((response) => {
             getData();
             $("#FormModal").modal("hide");
@@ -124,7 +115,7 @@ const editItem = (item) => {
     form.id = item.id;
     form.code = item.code;
     form.description = item.description;
-
+    form.sortorder = item.sortorder;
     if (form.is_active === 1) {
         checked.value = true;
     } else {
@@ -137,7 +128,7 @@ const editItem = (item) => {
 const deleteItem = (id) => {
     isLoadingSite.value = true;
     axios
-        .delete(`/web/warehouse/${id}`)
+        .delete(`/web/locationgroup/${id}`)
         .then((response) => {
             isLoadingSite.value = false;
             getData();
@@ -195,9 +186,10 @@ onMounted(() => {
                                     <th>ID</th>
                                     <th>Code</th>
                                     <th>Description</th>
-                                    <th>Active</th>
+                                    <th>Sort Order</th>
                                     <th>Created By</th>
                                     <th>Created At</th>
+                                    <th>Active</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -221,8 +213,8 @@ onMounted(() => {
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="staticBackdropLabel">
-                        <span v-if="editing">Edit Warehouse</span>
-                        <span v-else>Add Warehouse</span>
+                        <span v-if="editing">Edit {{ pageTitle }}</span>
+                        <span v-else>Add {{ pageTitle }}</span>
                     </h5>
                     <button
                         type="button"
@@ -251,7 +243,7 @@ onMounted(() => {
                             />
 
                             <div class="form-group">
-                                <label for="code">Warehouse Code</label>
+                                <label for="code">Location Group Code</label>
                                 <Field
                                     name="code"
                                     type="text"
@@ -261,7 +253,7 @@ onMounted(() => {
                                     }"
                                     id="code"
                                     aria-describedby="nameHelp"
-                                    placeholder="Enter Warehouse Code"
+                                    placeholder="Enter Location Group Code"
                                     v-model="form.code"
                                 />
                                 <span class="invalid-feedback">{{
@@ -285,6 +277,24 @@ onMounted(() => {
                                 />
                                 <span class="invalid-feedback">{{
                                     errors.description
+                                }}</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="sortorder">Sort Order</label>
+                                <Field
+                                    name="sortorder"
+                                    type="text"
+                                    class="form-control"
+                                    :class="{
+                                        'is-invalid': errors.sortorder,
+                                    }"
+                                    id="sortorder"
+                                    aria-describedby="nameHelp"
+                                    placeholder="Enter sort order"
+                                    v-model="form.sortorder"
+                                />
+                                <span class="invalid-feedback">{{
+                                    errors.sortorder
                                 }}</span>
                             </div>
 

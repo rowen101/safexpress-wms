@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Wms;
 
-use App\Http\Controllers\Controller;
 use App\Models\Wms\Customer;
 use Illuminate\Http\Request;
+use App\Models\Wms\ContactInfo;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 
 class CustomerController extends Controller
 {
@@ -19,9 +21,13 @@ class CustomerController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
-        $data = Customer::query()
-        ->orderBy('id', 'desc')
+{
+    $data = Customer::query()
+        ->join('wm_contactinfo', 'wm_customer.id', '=', 'wm_contactinfo.customer_id')
+        ->select('wm_customer.*', 'wm_contactinfo.contactname',
+        'wm_contactinfo.address1', 'wm_contactinfo.address2', 'wm_contactinfo.emailaddress',
+        'wm_contactinfo.telephone', 'wm_contactinfo.cellphone','wm_contactinfo.town','wm_contactinfo.province',
+        'wm_contactinfo.country','wm_contactinfo.postal')
         ->get()
         ->map(fn ($item) => [
             'id' => $item->id,
@@ -34,10 +40,19 @@ class CustomerController extends Controller
             'created_at' => $item->created_at->format('m-d-Y'),
             'updated_by' => $item->updated_by,
             'updated_at' => $item->updated_at->format('m-d-Y'),
+            'contactname' => $item->contactname,
+            'address1' => $item->address1,
+            'address2' => $item->address2,
+            'emailaddress' => $item->emailaddress,
+            'cellphone' => $item->cellphone,
+            'telephone' => $item->telephone,
+            'town' => $item->town,
+            'province' => $item->province,
         ]);
 
-        return $data;
-    }
+    return $data;
+}
+
 
     /**
      * Show the form for creating a new resource.
@@ -58,35 +73,70 @@ class CustomerController extends Controller
     public function store(Request $request)
     {
         $username = auth()->user()->name;
+
+
         $existingRecord = Customer::where([
             'cuscode' => $request->cuscode,
             'cusname' => $request->cusname,
-
         ])->first();
+
 
         if ($existingRecord && !$request->id) {
             return response()->json(['message' => 'This data already exists in the database.'], 422);
         }
 
-        $customer = Customer::updateOrCreate(
-            ['id' => $request->id],
-            [
-                'warehouse_id' => 1,
-                'cuscode' => $request->cuscode,
-                'cusname' => $request->cusname,
-                'leadtime' => $request->leadtime,
-                'stockfreshness' => $request->stockfreshness,
-                'is_active' => $request->is_active,
-                'created_by' => $username
-            ]
-        );
 
-        if ($customer->wasRecentlyCreated) {
-            return response()->json(['message' => 'saved successfully.']);
-        } else {
-            return response()->json(['message' => 'updated successfully.']);
+        DB::beginTransaction();
+
+        try {
+
+            $customer = Customer::updateOrCreate(
+                ['id' => $request->id],
+                [
+                    'warehouse_id' => 1,
+                    'cuscode' => $request->cuscode,
+                    'cusname' => $request->cusname,
+                    'leadtime' => $request->leadtime,
+                    'stockfreshness' => $request->stockfreshness,
+                    'is_active' => $request->is_active,
+                    'created_by' => $username
+                ]
+            );
+
+
+           ContactInfo::updateOrCreate(
+                ['customer_id' => $customer->id],
+                [
+                    'contactname' => $request->contactname,
+                    'address1' => $request->address1,
+                    'address2' => $request->address2,
+                    'town' => $request->town,
+                    'province' => $request->province,
+                    'country' => $request->country,
+                    'postal' => $request->postal,
+                    'telephone' => $request->telephone,
+                    'emailaddress' => $request->emailaddress,
+                    'created_by' => $username
+                ]
+            );
+
+
+            DB::commit();
+
+
+            $message = $customer->wasRecentlyCreated ? 'saved successfully.' : 'updated successfully.';
+
+            return response()->json(['message' => $message]);
+        } catch (\Exception $e) {
+
+            DB::rollback();
+
+
+            return response()->json(['message' => 'Error occurred while saving data.'], 500);
         }
     }
+
+
 
 
     /**
@@ -133,6 +183,9 @@ class CustomerController extends Controller
     {
         $data = Customer::find($id);
         $data->delete();
+
+        $datainfo = Contactinfo::where('customer_id',$id);
+        $datainfo->delete();
         return response()->json(['message' => 'successfull Deleted']);
     }
 }

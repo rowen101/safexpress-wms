@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('warehouse_id')->constrained('wm_warehouse')->onDelete('cascade');
             $table->string('cuscode',20)->nullable(false);
             $table->string('cusname',100)->nullable(false);
-            $table->integer('leadtime')->nullable(false);
+            $table->integer('leadtime')->default(0);
             $table->integer('stockfreshness')->nullable(false);
             $table->boolean('is_active')->default(true)->nullable(false);
             $table->string('created_by',20)->nullable(false);
@@ -28,7 +28,7 @@ return new class extends Migration
         Schema::create('wm_contactinfo', function (Blueprint $table) {
             $table->id();
             $table->foreignId('customer_id')->constrained('wm_customer')->onDelete('cascade');
-            $table->string('contactname',100)->nullable(false);
+            $table->string('contactname',100)->nullable(true);
             $table->string('address1',50)->nullable(true);
             $table->string('address2',50)->nullable(true);
             $table->string('town',50)->nullable(true);
@@ -38,9 +38,6 @@ return new class extends Migration
             $table->string('cellphone',15)->nullable(true);
             $table->string('telephone',15)->nullable(true);
             $table->string('emailaddress',50)->nullable(true);
-            $table->string('contacttype',10)->nullable(true);
-            $table->string('route',20)->nullable(true);
-            $table->boolean('is_active')->default(true)->nullable(false);
             $table->string('created_by',20)->nullable(false);
             $table->string('updated_by',20)->nullable(true);
             $table->timestamps();

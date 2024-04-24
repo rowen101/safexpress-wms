@@ -86,8 +86,18 @@ const resetForm = () => {
     form.cusname = "";
     form.leadtime = "";
     form.stockfreshness = "";
-    form.is_active = '';
+    form.is_active = "";
     form.created_by = "";
+    form.contactname = "";
+    form.address1 = "";
+    form.address2 = "";
+    form.town = "";
+    form.provinces = "";
+    form.country = "";
+    form.postal ="";
+    form.cellphone = "";
+    form.telephone = "";
+    form.emailaddress = "";
 };
 const createDataSchema = yup.object({
     cuscode: yup.string().required(),
@@ -108,8 +118,7 @@ const getData = () => {
     axios.get(`/web/customer`).then((response) => {
         listItem.value = response.data;
         isloading.value = false;
-    })
-
+    });
 };
 const addItem = () => {
     resetForm();
@@ -125,27 +134,23 @@ const handleSubmit = (values, actions) => {
 };
 
 const createRecord = (values, { resetForm, setErrors }) => {
-
     axios
         .post("/web/customer", values)
         .then((response) => {
-
-
             $("#FormModal").modal("hide");
             resetForm();
-            toastr.success(pageTitle+" "+response.data.message);
+            toastr.success(pageTitle + " " + response.data.message);
         })
         .catch((error) => {
-                toastr.error(error.response.data.message);
+            toastr.error(error.response.data.message);
         })
         .finally(() => {
             getData();
-
         });
 };
 
 const editItem = (item) => {
-   // resetForm();
+    // resetForm();
     editing.value = true;
     form.id = item.id;
     form.cuscode = item.cuscode;
@@ -153,6 +158,16 @@ const editItem = (item) => {
     form.leadtime = item.leadtime;
     form.stockfreshness = item.stockfreshness;
     form.is_active = item.is_active;
+    form.contactname = item.contactname;
+    form.address1 = item.address1;
+    form.address2 = item.address2;
+    form.town = item.town;
+    form.provinces = item.provinces;
+    form.country = item.country;
+    form.emailaddress =item.emailaddress;
+    form.telephone = item.telephone;
+    form.cellphone = item.cellphone;
+    form.postal = item.postal;
     $("#FormModal").modal("show");
 };
 
@@ -162,13 +177,12 @@ const updateRecord = ({ setErrors }) => {
         .then((response) => {
             getData();
             $("#FormModal").modal("hide");
-            toastr.success(pageTitle+" "+response.data.message);
+            toastr.success(pageTitle + " " + response.data.message);
         })
         .catch((error) => {
             setErrors(error.response.data.errors);
             console.log(error);
         });
-
 };
 const deleteItem = async (id) => {
     const result = await swal({
@@ -185,7 +199,7 @@ const deleteItem = async (id) => {
             .delete(`/web/customer/${id}`)
             .then((response) => {
                 isloading.value = false;
-                toastr.success(pageTitle+' '+response.data.message);
+                toastr.success(pageTitle + " " + response.data.message);
                 getData();
             })
             .catch((error) => {
@@ -207,7 +221,7 @@ onMounted(() => {
             </div>
             <div class="card">
                 <div class="card-body">
-                    <ContentLoader v-if="isloading"/>
+                    <ContentLoader v-if="isloading" />
 
                     <div v-else class="table-responsive">
                         <DataTable
@@ -272,7 +286,7 @@ onMounted(() => {
         aria-labelledby="staticBackdropLabel"
         aria-hidden="true"
     >
-        <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="staticBackdropLabel">
@@ -298,83 +312,242 @@ onMounted(() => {
                 >
                     <div class="modal-body">
                         <div class="col-md-12">
-                            <Field
-                                type="hidden"
-                                name="created_by"
-                                id="created_by"
-                                v-model="form.created_by"
-                            />
+                            <div class="row">
+                                <div class="col-6">
+                                    <Field
+                                        type="hidden"
+                                        name="created_by"
+                                        id="created_by"
+                                        v-model="form.created_by"
+                                    />
 
-                            <div class="form-group">
-                                <label for="cuscode">Customer Code</label>
-                                <Field
-                                    name="cuscode"
-                                    type="text"
-                                    class="form-control"
-                                    :class="{
-                                        'is-invalid': errors.cuscode,
-                                    }"
-                                    id="cuscode"
-                                    aria-describedby="nameHelp"
-                                    placeholder="Enter cuscode"
-                                    v-model="form.cuscode"
-                                />
-                                <span class="invalid-feedback">{{
-                                    errors.cuscode
-                                }}</span>
+                                    <div class="form-group">
+                                        <label for="cuscode"
+                                            >Customer Code</label
+                                        >
+                                        <Field
+                                            name="cuscode"
+                                            type="text"
+                                            class="form-control"
+                                            :class="{
+                                                'is-invalid': errors.cuscode,
+                                            }"
+                                            id="cuscode"
+                                            aria-describedby="nameHelp"
+                                            placeholder="Enter cuscode"
+                                            v-model="form.cuscode"
+                                        />
+                                        <span class="invalid-feedback">{{
+                                            errors.cuscode
+                                        }}</span>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="cusname"
+                                            >Costomer Name</label
+                                        >
+                                        <Field
+                                            name="cusname"
+                                            type="text"
+                                            class="form-control"
+                                            :class="{
+                                                'is-invalid': errors.cusname,
+                                            }"
+                                            id="cusname"
+                                            aria-describedby="nameHelp"
+                                            placeholder="Enter cusname"
+                                            v-model="form.cusname"
+                                        />
+                                        <span class="invalid-feedback">{{
+                                            errors.cusname
+                                        }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label for="leadtime">Lead Time</label>
+                                        <div class="input-group">
+                                            <Field
+                                                name="leadtime"
+                                                type="text"
+                                                class="form-control"
+                                                :class="{
+                                                    'is-invalid':
+                                                        errors.leadtime,
+                                                }"
+                                                id="leadtime"
+                                                aria-describedby="nameHelp"
+                                                placeholder="Enter leadtime"
+                                                v-model="form.leadtime"
+                                            />
+
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    days
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <span class="invalid-feedback">{{
+                                            errors.leadtime
+                                        }}</span>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="stockfreshness"
+                                            >Stock Freshness</label
+                                        >
+                                        <div class="input-group">
+                                            <Field
+                                                name="stockfreshness"
+                                                type="text"
+                                                class="form-control"
+                                                id="stockfreshness"
+                                                aria-describedby="nameHelp"
+                                                placeholder="Enter stockfreshness"
+                                                v-model="form.stockfreshness"
+                                            />
+
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    %
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="form-group">
-                                <label for="cusname">Costomer Name</label>
-                                <Field
-                                    name="cusname"
-                                    type="text"
-                                    class="form-control"
-                                    :class="{
-                                        'is-invalid': errors.cusname,
-                                    }"
-                                    id="cusname"
-                                    aria-describedby="nameHelp"
-                                    placeholder="Enter cusname"
-                                    v-model="form.cusname"
-                                />
-                                <span class="invalid-feedback">{{
-                                    errors.cusname
-                                }}</span>
-                            </div>
-                            <div class="form-group">
-                                <label for="leadtime">Lead Time</label>
-                                <Field
-                                    name="leadtime"
-                                    type="text"
-                                    class="form-control"
-                                    :class="{
-                                        'is-invalid': errors.leadtime,
-                                    }"
-                                    id="leadtime"
-                                    aria-describedby="nameHelp"
-                                    placeholder="Enter leadtime"
-                                    v-model="form.leadtime"
-                                />
-                                <span class="invalid-feedback">{{
-                                    errors.leadtime
-                                }}</span>
-                            </div>
+                            <fieldset>
+                                <legend>Contact info</legend>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label for="contactname"
+                                                >Contact Person</label
+                                            >
 
-                            <div class="form-group">
-                                <label for="stockfreshness"
-                                    >Stock Freshness</label
-                                >
-                                <Field
-                                    name="stockfreshness"
-                                    type="text"
-                                    class="form-control"
-                                    id="stockfreshness"
-                                    aria-describedby="nameHelp"
-                                    placeholder="Enter stockfreshness"
-                                    v-model="form.stockfreshness"
-                                />
-                            </div>
+                                            <Field
+                                                name="contactname"
+                                                type="text"
+                                                class="form-control"
+                                                id="contactname"
+                                                aria-describedby="nameHelp"
+                                                placeholder="Enter Contact Name"
+                                                v-model="form.contactname"
+                                            />
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="cellphone"
+                                                >Celphone No.</label
+                                            >
+
+                                            <Field
+                                                name="cellphone"
+                                                type="text"
+                                                class="form-control"
+                                                id="cellphone"
+                                                aria-describedby="nameHelp"
+                                                placeholder="Enter Cellphone No"
+                                                v-model="form.cellphone"
+                                            />
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="telephone"
+                                                >Telephone No.</label
+                                            >
+
+                                            <Field
+                                                name="telephone"
+                                                type="text"
+                                                class="form-control"
+                                                id="telephone"
+                                                aria-describedby="nameHelp"
+                                                placeholder="Enter telephone"
+                                                v-model="form.telephone"
+                                            />
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="emailaddress"
+                                                >Email</label
+                                            >
+
+                                            <Field
+                                                name="emailaddress"
+                                                type="text"
+                                                class="form-control"
+                                                id="emailaddress"
+                                                aria-describedby="nameHelp"
+                                                placeholder="Enter Email Address"
+                                                v-model="form.emailaddress"
+                                            />
+                                        </div>
+
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label for="address1"
+                                                >Address1:</label
+                                            >
+
+                                            <Field
+                                                name="address1"
+                                                type="text"
+                                                class="form-control"
+                                                id="address1"
+                                                aria-describedby="nameHelp"
+                                                placeholder="Enter Address1"
+                                                v-model="form.address1"
+                                            />
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="address2"
+                                                >Address2:</label
+                                            >
+
+                                            <Field
+                                                name="address2"
+                                                type="text"
+                                                class="form-control"
+                                                id="address2"
+                                                aria-describedby="nameHelp"
+                                                placeholder="Enter Address2"
+                                                v-model="form.address2"
+                                            />
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="town"
+                                                >Town:</label
+                                            >
+
+                                            <Field
+                                                name="town"
+                                                type="text"
+                                                class="form-control"
+                                                id="town"
+                                                aria-describedby="nameHelp"
+                                                placeholder="Enter town"
+                                                v-model="form.town"
+                                            />
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="province"
+                                                >Province:</label
+                                            >
+
+                                            <Field
+                                                name="province"
+                                                type="text"
+                                                class="form-control"
+                                                id="province"
+                                                aria-describedby="nameHelp"
+                                                placeholder="Enter province"
+                                                v-model="form.province"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
                             <div class="form-group">
                                 <FormCheckRadioGroup
                                     v-model="form.is_active"

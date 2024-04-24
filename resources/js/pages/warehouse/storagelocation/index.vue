@@ -31,7 +31,9 @@ const isLoadingSite = ref(false);
 const listItem = ref([]);
 const columns = [
     { data: "id" },
-    { data: "code" },
+    { data: "loccode" },
+    { data: "locationgroup" },
+    { data: "abccode" },
     { data: "description" },
     { data: "is_active" },
     { data: "created_by", sortable: false },
@@ -60,20 +62,9 @@ const editDataSchema = yup.object({
     code: yup.string().required(),
     description: yup.string().required(),
 });
-const getItems = () => {
-    isLoadingSite.value = true;
-    axios
-        .get(`/web/warehouse`)
-        .then((response) => {
-            isLoadingSite.value = false;
-            listItem.value = response.data;
-        })
-        .catch((error) => {
-            console.log(error);
-        });
-};
+
 const getData = () => {
-    axios.get(`/web/warehouse`).then((response) => {
+    axios.get(`/web/storage-location`).then((response) => {
         listItem.value = response.data;
     });
 };
@@ -90,7 +81,7 @@ const handleSubmit = (values, actions) => {
 };
 const createRecord = (values, { resetForm, setErrors }) => {
     axios
-        .post("/web/warehouse", values)
+        .post("/web/storage-location", values)
         .then((response) => {
             getData();
             $("#FormModal").modal("hide");
@@ -107,7 +98,7 @@ const createRecord = (values, { resetForm, setErrors }) => {
 
 const updateRecord = ({ setErrors }) => {
     axios
-        .post("/web/warehouse", form)
+        .post("/web/storage-location", form)
         .then((response) => {
             getData();
             $("#FormModal").modal("hide");
@@ -137,7 +128,7 @@ const editItem = (item) => {
 const deleteItem = (id) => {
     isLoadingSite.value = true;
     axios
-        .delete(`/web/warehouse/${id}`)
+        .delete(`/web/storage-location/${id}`)
         .then((response) => {
             isLoadingSite.value = false;
             getData();
@@ -146,6 +137,18 @@ const deleteItem = (id) => {
             console.log(error);
         });
 };
+
+const getkey = () =>{
+    axios
+        .delete(`/web/getkey/MOVEMENT`)
+        .then((response) => {
+            isLoadingSite.value = false;
+            getData();
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+}
 onMounted(() => {
     getData();
     document.title = pageTitle;
@@ -193,7 +196,9 @@ onMounted(() => {
                             <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>Code</th>
+                                    <th>Location Code</th>
+                                    <th>Location group</th>
+                                    <th>abccode</th>
                                     <th>Description</th>
                                     <th>Active</th>
                                     <th>Created By</th>
@@ -217,12 +222,12 @@ onMounted(() => {
         aria-labelledby="staticBackdropLabel"
         aria-hidden="true"
     >
-        <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="staticBackdropLabel">
-                        <span v-if="editing">Edit Warehouse</span>
-                        <span v-else>Add Warehouse</span>
+                        <span v-if="editing">Edit {{ pageTitle }}</span>
+                        <span v-else>Add {{ pageTitle }}</span>
                     </h5>
                     <button
                         type="button"
@@ -243,6 +248,10 @@ onMounted(() => {
                 >
                     <div class="modal-body">
                         <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-6">
+                                    
+                               
                             <Field
                                 type="hidden"
                                 name="created_by"
@@ -251,24 +260,91 @@ onMounted(() => {
                             />
 
                             <div class="form-group">
-                                <label for="code">Warehouse Code</label>
+                                <label for="loccode">Location Code</label>
                                 <Field
-                                    name="code"
+                                    name="loccode"
                                     type="text"
                                     class="form-control"
                                     :class="{
-                                        'is-invalid': errors.code,
+                                        'is-invalid': errors.loccode,
                                     }"
-                                    id="code"
+                                    id="loccode"
                                     aria-describedby="nameHelp"
-                                    placeholder="Enter Warehouse Code"
-                                    v-model="form.code"
+                                    placeholder="Enter Location Code"
+                                    v-model="form.loccode"
                                 />
                                 <span class="invalid-feedback">{{
-                                    errors.code
+                                    errors.loccode
                                 }}</span>
                             </div>
 
+                            <div class="form-group">
+                                        <label for="branch">Location Group</label>
+                                        <Field
+                                            as="select"
+                                            name="locationgroup"
+                                            class="form-control"
+                                            :class="{
+                                                'is-invalid': errors.locationgroup,
+                                            }"
+                                            id="locationgroup"
+                                            aria-describedby="branchHelp"
+                                            v-model="form.locationgroup"
+                                        >
+                                            <option value="" disabled>
+                                                Select Location Group
+                                            </option>
+
+                                            <option
+                                                v-for="item in listlocgroups"
+                                                :key="item.site_name"
+                                                :value="item.site_name"
+                                            >
+                                                {{ site.locationgroup }}
+                                            </option>
+                                        </Field>
+                                        <span class="invalid-feedback">{{
+                                            errors.branch
+                                        }}</span>
+                                    </div>
+                                    <div class="form-group">
+                                <label for="locationtype">Location type</label>
+                                <Field
+                                    name="locationtype"
+                                    type="text"
+                                    class="form-control"
+                                    :class="{
+                                        'is-invalid': errors.locationtype,
+                                    }"
+                                    id="locationtype"
+                                    aria-describedby="nameHelp"
+                                    placeholder="Enter Location Type"
+                                    v-model="form.locationtype"
+                                />
+                                <span class="invalid-feedback">{{
+                                    errors.locationtype
+                                }}</span>
+                            </div>
+                        </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                <label for="loccode">ABC Code</label>
+                                <Field
+                                    name="loccode"
+                                    type="text"
+                                    class="form-control"
+                                    :class="{
+                                        'is-invalid': errors.loccode,
+                                    }"
+                                    id="loccode"
+                                    aria-describedby="nameHelp"
+                                    placeholder="Enter Location Code"
+                                    v-model="form.loccode"
+                                />
+                                <span class="invalid-feedback">{{
+                                    errors.loccode
+                                }}</span>
+                            </div>
                             <div class="form-group">
                                 <label for="description">Description</label>
                                 <Field
@@ -287,7 +363,26 @@ onMounted(() => {
                                     errors.description
                                 }}</span>
                             </div>
-
+                            <div class="form-group">
+                                <label for="batchcapacity">Batch Capacity</label>
+                                <Field
+                                    name="batchcapacity"
+                                    type="text"
+                                    class="form-control"
+                                    :class="{
+                                        'is-invalid': errors.batchcapacity,
+                                    }"
+                                    id="batchcapacity"
+                                    aria-describedby="nameHelp"
+                                    placeholder="Enter Batch Capacity"
+                                    v-model="form.batchcapacity"
+                                />
+                                <span class="invalid-feedback">{{
+                                    errors.batchcapacity
+                                }}</span>
+                            </div>
+                        </div>
+                    </div>
                             <div class="form-group">
                                 <FormCheckRadioGroup
                                     v-model="form.is_active"

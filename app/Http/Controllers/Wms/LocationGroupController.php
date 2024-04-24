@@ -53,7 +53,6 @@ class LocationGroupController extends Controller
                 'warehouse_id' => 1,
                 'code' => $request->code,
                 'description' => $request->description,
-                'locationtype' => $request->locationtype,
                 'sortorder' => $request->sortorder,
                 'is_active' => $request->is_active,
                 'created_by' => $username
