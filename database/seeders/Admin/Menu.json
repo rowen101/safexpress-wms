@@ -157,18 +157,7 @@
         "created_at": null,
         "updated_at": null
     },
-    {
-        "menu_id": 13,
-        "parent_id":1,
-        "menuTitle": "Item Master",
-        "menuIcon": "fas fas fa-bars",
-        "menuRoute": "/warehouse/item-master",
-        "sortOrder": 190,
-        "isActive": 1,
-        "createdBy": 1,
-        "created_at": null,
-        "updated_at": null
-    },
+   
     {
         "menu_id": 14,
         "parent_id":6,

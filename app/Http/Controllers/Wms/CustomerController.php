@@ -115,6 +115,7 @@ class CustomerController extends Controller
                     'country' => $request->country,
                     'postal' => $request->postal,
                     'telephone' => $request->telephone,
+                    'cellphone' => $request->cellphone,
                     'emailaddress' => $request->emailaddress,
                     'created_by' => $username
                 ]

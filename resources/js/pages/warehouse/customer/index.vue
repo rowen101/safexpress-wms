@@ -19,6 +19,7 @@ import FormCheckRadioGroup from "@/Components/FormCheckRadioGroup.vue";
 import { useRoute } from "vue-router";
 import ContentLoader from "../../../components/ContentLoader.vue";
 
+
 DataTable.use(pdfmake);
 DataTable.use(ButtonsHtml5);
 DataTable.use(DataTablesCore);
@@ -223,14 +224,17 @@ onMounted(() => {
                 <div class="card-body">
                     <ContentLoader v-if="isloading" />
 
-                    <div v-else class="table-responsive">
+
                         <DataTable
-                            class="mt-2 table table-sm table-hover table-striped display"
+                        style="width:100%"
+                            class="mt-2 table table-sm table-hover table-striped display nowrap"
                             :columns="columns"
                             :data="listItem"
                             :options="{
-                                responsive: false,
-                                autoWidth: false,
+                                responsive: true,
+                                rowReorder: {
+                                    selector: 'td:nth-child(2)'
+                                },
                                 lengthMenu: [
                                     [10, 25, 50, -1],
                                     [10, 25, 50, 'All'],
@@ -271,7 +275,7 @@ onMounted(() => {
                                 </tr>
                             </thead>
                         </DataTable>
-                    </div>
+
                 </div>
             </div>
         </div>
